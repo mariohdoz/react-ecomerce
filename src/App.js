@@ -7,9 +7,12 @@ import {
   ShopPage
  } from "./pages/index.pages";
 
+import { Header } from "./components/index.components";
+
 function App() {
   return (
     <div>
+      <Header />
       <Switch>
         <Route exact path='/' component={HomePage} />
         <Route exact path='/shop' component={ShopPage} />
