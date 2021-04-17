@@ -5,11 +5,11 @@ import './App.css';
 import { 
   HomePage,
   ShopPage,
-  SingInAndSignUpPage
+  SignInAndSignUpPage
  } from "./pages/index.pages";
 
 import { Header } from "./components/index.components";
-import { auth } from './firebase/firebase.utils';
+import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 
 class App extends React.Component {
 
@@ -24,9 +24,22 @@ class App extends React.Component {
   unsubcribeFromAuth = null;
 
   componentDidMount() {
-    this.unsubcribeFromAuth = auth.onAuthStateChanged( user => {
-      this.setState({ currentUser: user });
-      console.log(user);
+    this.unsubcribeFromAuth = auth.onAuthStateChanged( async user => {
+      if(user){
+        const userRef = await createUserProfileDocument(user);
+        userRef.onSnapshot((snap)=>{
+          this.setState({
+            currentUser: {
+              id: snap.id,
+              ...snap.data()
+            }
+          })
+          console.log(this.state);
+        });
+      }
+
+      this.setState({ currentUser: user })
+
     });
   }
 
@@ -41,7 +54,7 @@ class App extends React.Component {
         <Switch>
           <Route exact path='/' component={HomePage} />
           <Route exact path='/shop' component={ShopPage} />
-          <Route exact path='/signin' component={SingInAndSignUpPage} />
+          <Route exact path='/signin' component={SignInAndSignUpPage} />
         </Switch>
       </div>
     );
